@@ -1,6 +1,7 @@
 package runner
 
 import (
+	"GitHubCLI/constants"
 	"GitHubCLI/gitHubRepos"
 	"GitHubCLI/gitHubUser"
 	"bufio"
@@ -9,19 +10,6 @@ import (
 	"os"
 	"strings"
 )
-
-const SEARCH_FOR_USER_OPTION = "1"
-const SHOW_REPOSITORIES = "2"
-const TERMINATE_GITHUB = "3"
-const SORT_BY_STARS = "1"
-const SORT_BY_NAME = "2"
-const SORT_BY_WATCHERS_COUNT = "3"
-const SORT_BY_FORKS_COUNT = "4"
-const SORT_BY_LANGUAGE = "5"
-const SHOW_MOST_FAMOUS_REPO = "1"
-const SHOW_STARS_GATHERED = "2"
-const SHOW_SORTED_BY_CRITERIA = "3"
-const SHOW_FILTERED_BY_LANGUAGE = "4"
 
 func readInput() (string, error) {
 	var input string
@@ -32,13 +20,10 @@ func readInput() (string, error) {
 	return input, nil
 }
 
-func handleReposRequest(response *http.Response) (*gitHubRepos.GitHubRepos, error) {
-	repos, err := gitHubRepos.NewGitHubReposDatabase(response)
-	defer response.Body.Close()
-	if err != nil {
-		return nil, err
-	}
-	return repos, nil
+func printGitHubHeader() {
+	fmt.Println(constants.Bold + constants.ColorCyan + "===================================" + constants.ColorReset)
+	fmt.Println(constants.Bold + constants.ColorCyan + "       GitHub CLI Application      " + constants.ColorReset)
+	fmt.Println(constants.Bold + constants.ColorCyan + "===================================" + constants.ColorReset)
 }
 
 func searchForUser() (*gitHubUser.GitHubUser, error) {
@@ -71,15 +56,15 @@ func getUserRepos(userName string) (*gitHubRepos.GitHubRepos, error) {
 }
 
 func handleSortingCriteria(criteria string, repos *gitHubRepos.GitHubRepos) error {
-	if criteria == SORT_BY_STARS {
+	if criteria == constants.SORT_BY_STARS {
 		repos.SortReposByCriteria(sortByStars)
-	} else if criteria == SORT_BY_NAME {
+	} else if criteria == constants.SORT_BY_NAME {
 		repos.SortReposByCriteria(sortByName)
-	} else if criteria == SORT_BY_WATCHERS_COUNT {
+	} else if criteria == constants.SORT_BY_WATCHERS_COUNT {
 		repos.SortReposByCriteria(sortByWatchersCount)
-	} else if criteria == SORT_BY_FORKS_COUNT {
+	} else if criteria == constants.SORT_BY_FORKS_COUNT {
 		repos.SortReposByCriteria(sortByForksCount)
-	} else if criteria == SORT_BY_LANGUAGE {
+	} else if criteria == constants.SORT_BY_LANGUAGE {
 		repos.SortReposByCriteria(sortByLanguage)
 	} else {
 		return fmt.Errorf("invalid criteria")
@@ -89,7 +74,7 @@ func handleSortingCriteria(criteria string, repos *gitHubRepos.GitHubRepos) erro
 
 func handleTotalStarsRequest(repos *gitHubRepos.GitHubRepos, user *gitHubUser.GitHubUser) {
 	stars := repos.GetTotalStarsEarned()
-	fmt.Printf("%v managed to gather %d stars in total\n", user.Login, stars)
+	fmt.Printf("%v managed to gather %v%d stars in total\n", user.Login, constants.Bold+constants.ColorYellow, stars)
 }
 
 func handleMostStarredRepoRequest(repos *gitHubRepos.GitHubRepos) {
@@ -98,20 +83,20 @@ func handleMostStarredRepoRequest(repos *gitHubRepos.GitHubRepos) {
 }
 
 func printCriteriaInfo() {
-	fmt.Println("Select a criteria: ")
-	fmt.Println("1. Sort by stars gathered")
-	fmt.Println("2. Sort by names")
-	fmt.Println("3. Sort by watchers count")
-	fmt.Println("4. Sort by forks count")
-	fmt.Println("5. Sort by language")
+	fmt.Println(constants.Bold + constants.ColorGreen + "Select a criteria:" + constants.ColorReset)
+	fmt.Println(constants.Bold + constants.ColorBlue + "1. Sort by stars gathered" + constants.ColorReset)
+	fmt.Println(constants.Bold + constants.ColorBlue + "2. Sort by names" + constants.ColorReset)
+	fmt.Println(constants.Bold + constants.ColorBlue + "3. Sort by watchers count" + constants.ColorReset)
+	fmt.Println(constants.Bold + constants.ColorBlue + "4. Sort by forks count" + constants.ColorReset)
+	fmt.Println(constants.Bold + constants.ColorBlue + "5. Sort by language" + constants.ColorReset)
 }
 
 func printActionsForReposInfo(user *gitHubUser.GitHubUser) {
-	fmt.Println("Actions for repos: ")
-	fmt.Printf("1.Show %v most famous repo\n", user.Login)
-	fmt.Printf("2.Show %v stars gathered count\n", user.Login)
-	fmt.Printf("3.Show %v repos sorted by criteria\n", user.Login)
-	fmt.Printf("4.Show %v repos filtered by language\n", user.Login)
+	fmt.Println(constants.Bold + constants.ColorMagenta + "Actions for " + user.Login + "'s repositories:" + constants.ColorReset)
+	fmt.Printf(constants.Bold+constants.ColorYellow+"1. Show %v's most famous repo\n"+constants.ColorReset, user.Login)
+	fmt.Printf(constants.Bold+constants.ColorYellow+"2. Show %v's stars gathered count\n"+constants.ColorReset, user.Login)
+	fmt.Printf(constants.Bold+constants.ColorYellow+"3. Show %v's repos sorted by criteria\n"+constants.ColorReset, user.Login)
+	fmt.Printf(constants.Bold+constants.ColorYellow+"4. Show %v's repos filtered by language\n"+constants.ColorReset, user.Login)
 }
 
 func printReposAfterSorting(repos *gitHubRepos.GitHubRepos, criteria string) error {
@@ -129,18 +114,18 @@ func printReposAfterFilteredByLanguage(repos *gitHubRepos.GitHubRepos, language 
 }
 
 func printGitHubFunctionalityInfo() {
-	fmt.Println("Select option:")
-	fmt.Println("1.Search for another user")
-	fmt.Println("2.Show this user repositories")
-	fmt.Println("3.Leave GitHub")
+	fmt.Println(constants.Bold + constants.ColorGreen + "Select an option:" + constants.ColorReset)
+	fmt.Println(constants.Bold + constants.ColorBlue + "1. Search for another user" + constants.ColorReset)
+	fmt.Println(constants.Bold + constants.ColorBlue + "2. Show this user's repositories" + constants.ColorReset)
+	fmt.Println(constants.Bold + constants.ColorBlue + "3. Leave GitHub" + constants.ColorReset)
 }
 
 func handleReposAction(repos *gitHubRepos.GitHubRepos, user *gitHubUser.GitHubUser, reposAction string, reader *bufio.Reader) error {
-	if reposAction == SHOW_MOST_FAMOUS_REPO {
+	if reposAction == constants.SHOW_MOST_FAMOUS_REPO {
 		handleMostStarredRepoRequest(repos)
-	} else if reposAction == SHOW_STARS_GATHERED {
+	} else if reposAction == constants.SHOW_STARS_GATHERED {
 		handleTotalStarsRequest(repos, user)
-	} else if reposAction == SHOW_SORTED_BY_CRITERIA {
+	} else if reposAction == constants.SHOW_SORTED_BY_CRITERIA {
 		printCriteriaInfo()
 		criteria, err := reader.ReadString('\n')
 		if err != nil {
@@ -151,7 +136,7 @@ func handleReposAction(repos *gitHubRepos.GitHubRepos, user *gitHubUser.GitHubUs
 		if err != nil {
 			return err
 		}
-	} else if reposAction == SHOW_FILTERED_BY_LANGUAGE {
+	} else if reposAction == constants.SHOW_FILTERED_BY_LANGUAGE {
 		fmt.Print("Enter a language ")
 		language, err5 := reader.ReadString('\n')
 		if err5 != nil {
@@ -163,16 +148,8 @@ func handleReposAction(repos *gitHubRepos.GitHubRepos, user *gitHubUser.GitHubUs
 	return nil
 }
 
-func handleUserSearch() error {
-	user, err := searchForUser()
-	if err != nil {
-		return err
-	}
-	user.ShowUserInfo()
-	return nil
-}
-
 func Run() error {
+	printGitHubHeader()
 	user, err := searchForUser()
 	if err != nil {
 		return err
@@ -186,7 +163,7 @@ func Run() error {
 			return err2
 		}
 		choice = strings.TrimSpace(choice)
-		if choice == SHOW_REPOSITORIES {
+		if choice == constants.SHOW_REPOSITORIES {
 			repos, err3 := getUserRepos(user.Login)
 			if err3 != nil {
 				return err3
@@ -202,13 +179,13 @@ func Run() error {
 			if err4 != nil {
 				return err4
 			}
-		} else if choice == SEARCH_FOR_USER_OPTION {
+		} else if choice == constants.SEARCH_FOR_USER_OPTION {
 			user, err = searchForUser()
 			if err != nil {
 				return err
 			}
 			user.ShowUserInfo()
-		} else if choice == TERMINATE_GITHUB {
+		} else if choice == constants.TERMINATE_GITHUB {
 			break
 		}
 	}

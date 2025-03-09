@@ -1,6 +1,7 @@
 package gitHubRepos
 
 import (
+	"GitHubCLI/constants"
 	"GitHubCLI/gitHubUser"
 	"fmt"
 )
@@ -16,11 +17,11 @@ type GitHubRepo struct {
 }
 
 func (repo *GitHubRepo) ShowRepoInfo() {
-	fmt.Printf("repository name😎: %v\n", repo.Name)
-	fmt.Printf("owner🤠: %v\n", repo.Owner.Login)
-	fmt.Printf("description👨‍💻: %v\n", repo.Description)
-	fmt.Printf("stars🤩: %v\n", repo.StarGazersCount)
-	fmt.Printf("watchers👁: %v\n", repo.WatchersCount)
-	fmt.Printf("language🧠: %v\n", repo.Language)
-	fmt.Printf("forks Count🍴: %v\n", repo.ForksCount)
+	fmt.Printf("%sRepository Name😎:%s %v\n", constants.ColorMagenta, constants.ColorReset, repo.Name)
+	fmt.Printf("%sOwner🤠:%s %v\n", constants.ColorBlue, constants.ColorReset, repo.Owner.Login)
+	fmt.Printf("%sDescription👨‍💻:%s %v\n", constants.ColorGreen, constants.ColorReset, repo.Description)
+	fmt.Printf("%sStars🤩:%s %v\n", constants.ColorYellow, constants.ColorReset, repo.StarGazersCount)
+	fmt.Printf("%sWatchers👁:%s %v\n", constants.ColorRed, constants.ColorReset, repo.WatchersCount)
+	fmt.Printf("%sLanguage🧠:%s %v\n", constants.ColorCyan, constants.ColorReset, repo.Language)
+	fmt.Printf("%sForks Count🍴:%s %v\n", constants.ColorWhite, constants.ColorReset, repo.ForksCount)
 }

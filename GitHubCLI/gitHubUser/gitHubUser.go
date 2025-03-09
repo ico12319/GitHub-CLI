@@ -1,6 +1,7 @@
 package gitHubUser
 
 import (
+	"GitHubCLI/constants"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -36,10 +37,10 @@ func NewGitHubUser(response *http.Response) (*GitHubUser, error) {
 }
 
 func (user *GitHubUser) ShowUserInfo() {
-	fmt.Printf("username👽: %v\n", user.Login)
-	fmt.Printf("full name🧐: %v\n", user.Name)
-	fmt.Printf("location👁: %v\n", user.Location)
-	fmt.Printf("public repositories count✍️: %v\n", user.PublicRepos)
-	fmt.Printf("followers count🤳: %v\n", user.Followers)
-	fmt.Printf("following🕵️‍♂️: %v\n", user.Following)
+	fmt.Printf("%sUsername👽:%s %v\n", constants.ColorMagenta, constants.ColorReset, user.Login)
+	fmt.Printf("%sFull Name🧐:%s %v\n", constants.ColorBlue, constants.ColorReset, user.Name)
+	fmt.Printf("%sLocation👁:%s %v\n", constants.ColorGreen, constants.ColorReset, user.Location)
+	fmt.Printf("%sPublic Repositories Count✍️:%s %v\n", constants.ColorYellow, constants.ColorReset, user.PublicRepos)
+	fmt.Printf("%sFollowers Count🤳:%s %v\n", constants.ColorCyan, constants.ColorReset, user.Followers)
+	fmt.Printf("%sFollowing🕵️‍♂️:%s %v\n", constants.ColorRed, constants.ColorReset, user.Following)
 }

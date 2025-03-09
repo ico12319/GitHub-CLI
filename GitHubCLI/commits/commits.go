@@ -29,3 +29,10 @@ func NewCommits(response *http.Response) (*Commits, error) {
 	}
 	return &Commits{Comms: comm.Comms}, nil
 }
+
+func (commits *Commits) ShowCommits() {
+	for index, commit := range commits.Comms {
+		fmt.Printf("%d. ", index+1)
+		commit.ShowCommitInfo()
+	}
+}

@@ -35,6 +35,5 @@ func NewCommit(response *http.Response) (*Commit, error) {
 
 func (c *Commit) ShowCommitInfo() {
 	fmt.Println(c.Detail.Message)
-	c.Author.ShowUserInfo()
-	c.Committer.ShowUserInfo()
+	fmt.Printf("Made by %s\n", c.Author.Login)
 }
