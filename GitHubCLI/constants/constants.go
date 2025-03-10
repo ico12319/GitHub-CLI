@@ -13,4 +13,6 @@ const (
 	SHOW_STARS_GATHERED       = "2"
 	SHOW_SORTED_BY_CRITERIA   = "3"
 	SHOW_FILTERED_BY_LANGUAGE = "4"
+	SHOW_COMMITS              = "5"
+	GO_BACK                   = "6"
 )

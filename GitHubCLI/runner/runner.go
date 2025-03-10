@@ -1,6 +1,7 @@
 package runner
 
 import (
+	commits2 "GitHubCLI/commits"
 	"GitHubCLI/constants"
 	"GitHubCLI/gitHubRepos"
 	"GitHubCLI/gitHubUser"
@@ -11,12 +12,27 @@ import (
 	"strings"
 )
 
-func readInput() (string, error) {
-	var input string
-	_, err := fmt.Scanln(&input)
+func getUsersCommitsForRepo(userLogin string, repoName string) (*commits2.Commits, error) {
+	resp, err := http.Get(COMMITS_PATH + userLogin + "/" + repoName + "/commits")
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("not okay status code %v", resp.StatusCode)
+	}
+	commits, err := commits2.NewCommits(resp)
+	if err != nil {
+		return nil, err
+	}
+	return commits, nil
+}
+
+func readInput(reader *bufio.Reader) (string, error) {
+	input, err := reader.ReadString('\n')
 	if err != nil {
 		return "", err
 	}
+	input = strings.TrimSpace(input)
 	return input, nil
 }
 
@@ -26,9 +42,9 @@ func printGitHubHeader() {
 	fmt.Println(constants.Bold + constants.ColorCyan + "===================================" + constants.ColorReset)
 }
 
-func searchForUser() (*gitHubUser.GitHubUser, error) {
+func searchForUser(reader *bufio.Reader) (*gitHubUser.GitHubUser, error) {
 	fmt.Print("Search user: ")
-	username, err := readInput()
+	username, err := readInput(reader)
 	if err != nil {
 		return nil, err
 	}
@@ -97,6 +113,8 @@ func printActionsForReposInfo(user *gitHubUser.GitHubUser) {
 	fmt.Printf(constants.Bold+constants.ColorYellow+"2. Show %v's stars gathered count\n"+constants.ColorReset, user.Login)
 	fmt.Printf(constants.Bold+constants.ColorYellow+"3. Show %v's repos sorted by criteria\n"+constants.ColorReset, user.Login)
 	fmt.Printf(constants.Bold+constants.ColorYellow+"4. Show %v's repos filtered by language\n"+constants.ColorReset, user.Login)
+	fmt.Printf(constants.Bold+constants.ColorYellow+"5. Show %v's commits in this repo\n"+constants.ColorReset, user.Login)
+	fmt.Printf(constants.Bold + constants.ColorYellow + "6. Back\n" + constants.ColorReset)
 }
 
 func printReposAfterSorting(repos *gitHubRepos.GitHubRepos, criteria string) error {
@@ -120,6 +138,24 @@ func printGitHubFunctionalityInfo() {
 	fmt.Println(constants.Bold + constants.ColorBlue + "3. Leave GitHub" + constants.ColorReset)
 }
 
+func handleInvalidRepoNameWhenSearchingCommits(user *gitHubUser.GitHubUser, repoName string, reader *bufio.Reader) {
+	for {
+		commits, err := getUsersCommitsForRepo(user.Login, repoName)
+		if err != nil {
+			fmt.Println("Invalid repo name!")
+			fmt.Print("Enter repo's name: ")
+			repoName, err = reader.ReadString('\n')
+			repoName = strings.TrimSpace(repoName)
+			if err != nil {
+				return
+			}
+			continue
+		}
+		commits.ShowCommits()
+		break
+	}
+}
+
 func handleReposAction(repos *gitHubRepos.GitHubRepos, user *gitHubUser.GitHubUser, reposAction string, reader *bufio.Reader) error {
 	if reposAction == constants.SHOW_MOST_FAMOUS_REPO {
 		handleMostStarredRepoRequest(repos)
@@ -138,49 +174,69 @@ func handleReposAction(repos *gitHubRepos.GitHubRepos, user *gitHubUser.GitHubUs
 		}
 	} else if reposAction == constants.SHOW_FILTERED_BY_LANGUAGE {
 		fmt.Print("Enter a language ")
-		language, err5 := reader.ReadString('\n')
-		if err5 != nil {
-			return err5
+		language, err := reader.ReadString('\n')
+		if err != nil {
+			return err
 		}
 		language = strings.TrimSpace(language)
 		printReposAfterFilteredByLanguage(repos, language)
+	} else if reposAction == constants.SHOW_COMMITS {
+		fmt.Print(constants.Bold + constants.ColorBlue + "Enter repo name: " + constants.ColorReset)
+		repoName, err := reader.ReadString('\n')
+		if err != nil {
+			return err
+		}
+		repoName = strings.TrimSpace(repoName)
+		handleInvalidRepoNameWhenSearchingCommits(user, repoName, reader)
 	}
 	return nil
 }
 
+func handleUserSearch(reader *bufio.Reader) *gitHubUser.GitHubUser {
+	for {
+		us, err := searchForUser(reader)
+		if err != nil {
+			continue
+		}
+		us.ShowUserInfo()
+		return us
+	}
+}
+
 func Run() error {
 	printGitHubHeader()
-	user, err := searchForUser()
-	if err != nil {
-		return err
-	}
-	user.ShowUserInfo()
+	reader := bufio.NewReader(os.Stdin)
+	user := handleUserSearch(reader)
 	for {
 		printGitHubFunctionalityInfo()
-		reader := bufio.NewReader(os.Stdin)
-		choice, err2 := reader.ReadString('\n')
-		if err2 != nil {
-			return err2
+		choice, err := reader.ReadString('\n')
+		if err != nil {
+			return err
 		}
 		choice = strings.TrimSpace(choice)
 		if choice == constants.SHOW_REPOSITORIES {
-			repos, err3 := getUserRepos(user.Login)
-			if err3 != nil {
-				return err3
+			repos, err := getUserRepos(user.Login)
+			if err != nil {
+				return err
 			}
 			repos.ShowReposInfo()
-			printActionsForReposInfo(user)
-			reposAction, err3 := reader.ReadString('\n')
-			if err3 != nil {
-				return err3
-			}
-			reposAction = strings.TrimSpace(reposAction)
-			err4 := handleReposAction(repos, user, reposAction, reader)
-			if err4 != nil {
-				return err4
+			for {
+				printActionsForReposInfo(user)
+				reposAction, err := reader.ReadString('\n')
+				if err != nil {
+					return err
+				}
+				reposAction = strings.TrimSpace(reposAction)
+				if reposAction == constants.GO_BACK {
+					break
+				}
+				err = handleReposAction(repos, user, reposAction, reader)
+				if err != nil {
+					return err
+				}
 			}
 		} else if choice == constants.SEARCH_FOR_USER_OPTION {
-			user, err = searchForUser()
+			user, err = searchForUser(reader)
 			if err != nil {
 				return err
 			}

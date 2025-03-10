@@ -1,23 +1,13 @@
 package main
 
-import (
-	commits2 "GitHubCLI/commits"
-	"fmt"
-	"net/http"
-)
+import "GitHubCLI/runner"
 
 func main() {
 
-	url := fmt.Sprintf("https://api.github.com/repos/%s/%s/commits", "ico12319", "LeetCode-Tasks")
-	resp, err2 := http.Get(url)
-	if err2 != nil {
-		panic(true)
-	}
-	commits, err := commits2.NewCommits(resp)
-	if err != nil {
-		panic(true)
-	}
-	commits.ShowCommits()
+	//url := fmt.Sprintf("https://api.github.com/repos/%s/%s/commits", "ico12319", "FilterKit")
+
+	runner.Run()
+
 	//err := runner.Run()
 	//if err != nil {
 	//	panic(true)
