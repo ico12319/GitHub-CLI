@@ -113,7 +113,7 @@ func printActionsForReposInfo(user *gitHubUser.GitHubUser) {
 	fmt.Printf(constants.Bold+constants.ColorYellow+"2. Show %v's stars gathered count\n"+constants.ColorReset, user.Login)
 	fmt.Printf(constants.Bold+constants.ColorYellow+"3. Show %v's repos sorted by criteria\n"+constants.ColorReset, user.Login)
 	fmt.Printf(constants.Bold+constants.ColorYellow+"4. Show %v's repos filtered by language\n"+constants.ColorReset, user.Login)
-	fmt.Printf(constants.Bold+constants.ColorYellow+"5. Show %v's commits in this repo\n"+constants.ColorReset, user.Login)
+	fmt.Printf(constants.Bold+constants.ColorYellow+"5. Show %v's commits in a selected repo\n"+constants.ColorReset, user.Login)
 	fmt.Printf(constants.Bold + constants.ColorYellow + "6. Back\n" + constants.ColorReset)
 }
 

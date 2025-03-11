@@ -1,12 +1,19 @@
 package main
 
-import "GitHubCLI/runner"
+import (
+	"GitHubCLI/runner"
+	"fmt"
+)
 
 func main() {
 
 	//url := fmt.Sprintf("https://api.github.com/repos/%s/%s/commits", "ico12319", "FilterKit")
 
-	runner.Run()
+	err := runner.Run()
+	if err != nil {
+		fmt.Println("Fatal error!")
+		return
+	}
 
 	//err := runner.Run()
 	//if err != nil {
