@@ -40,16 +40,16 @@ A simple and colorful command-line interface tool built in Go that lets you inte
 
 You will be prompted with several options. 
 
-## Search for a user: Type a GitHub username when prompted.:##
-## Show repositories: After searching for a user, choose the option to display their repositories.:##
-## Sort repositories: Use the provided options to sort the repositories by various criteria.:##
-## View commit details: If available, check out commit messages and user details.:##
+**Search for a user: Type a GitHub username when prompted.:**
+**Show repositories: After searching for a user, choose the option to display their repositories.:**
+**Sort repositories: Use the provided options to sort the repositories by various criteria.:**
+**View commit details: If available, check out commit messages and user details.:**
 
 ## Contributing
 
 Contributions are welcome! If you'd like to help improve GitHub CLI:
 
-## Fork the repository.:##
-## Create a new branch for your feature or bugfix.:##
-## Commit your changes with clear messages.:##
-## Open a pull request for review.:##
+**Fork the repository.:**
+**Create a new branch for your feature or bugfix.:**
+**Commit your changes with clear messages.:**
+**Open a pull request for review.:**
